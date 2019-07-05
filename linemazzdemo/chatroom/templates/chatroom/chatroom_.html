@@ -1,0 +1,90 @@
+{% extends "base_.html" %} 
+
+{% block container %}
+    {% load static %}   
+    
+    <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="row">
+                <div id="monitor_chat" class="monitor_chat col-md-12">
+                </div>
+            </div>
+            <div class="row"> 
+                <div class="col-md-12 sent_message_chat">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <input class="col-md-12" type="text" name="" id="text_message">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="send_button">
+                                ส่ง
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="col-md-3"></div>
+{% endblock container %} 
+
+{% block script %}
+<script>
+    function get_message(token){
+        data = [
+            {
+                "text": "xxxxxxxxxx",
+                "display_name": "killbic",
+                "date_message": "1/12/2560",
+                "status_conver": 0
+            }, 
+            {
+                "text": "dddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                "display_name": "agentTest",
+                "date_message": "1/12/2560",
+                "status_conver": 1
+            }, 
+            {
+                "text": "ggggggggggg",
+                "display_name": "killbic",
+                "date_message": "1/12/2560",
+                "status_conver": 0
+            }, 
+            {
+                "text": "eeeeeeeeeeee",
+                "display_name": "agentTest",
+                "date_message": "1/12/2560",
+                "status_conver": 1
+            }, 
+            {
+                "text": "hhhhhhhhhhhhhhhhh",
+                "display_name": "killbic",
+                "date_message": "1/12/2560",
+                "status_conver": 0
+            }, 
+            {
+                "text": "kkkkkkkkkkkkk",
+                "display_name": "agentTest",
+                "date_message": "1/12/2560",
+                "status_conver": 1
+            }, 
+        ]
+
+        conversation_all = ""
+        for (conversation of data){
+            conversation_all += `
+            <div class="box_conversation">                
+                <div class="contact_chat">${conversation["display_name"]}</div>
+                <div class="message_con">${conversation["text"]}</div>
+                <div class="date_con">${conversation["date_message"]}</div>                
+            </div>
+            `
+        }
+        
+        $("#monitor_chat").html(conversation_all)
+    } 
+
+    $(document).ready(function() {
+        get_message()
+    });
+</script>
+{% endblock script %}
