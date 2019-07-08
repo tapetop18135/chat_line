@@ -43,7 +43,9 @@ class CallbackView(View):
                     line_contact        = contact,
                 )
                 chat_session.save()
-            
+            else:
+                chat_session = chat_session_list.first()
+
             text = ''
             file = None
             image = None
@@ -57,6 +59,7 @@ class CallbackView(View):
             # ChatSession.objects.filter(line_account=line_account, line_contact=line_contact)
             
             chat_message = ChatMessage(
+                session             = chat_session,
                 line_account        = line_account,
                 line_contact        = contact,
                 message_type        = event.message.type,

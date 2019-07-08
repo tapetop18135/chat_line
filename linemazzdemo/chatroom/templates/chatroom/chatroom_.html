@@ -1,90 +1,195 @@
-{% extends "base_.html" %} 
+{% extends "base_.html" %}
 
 {% block container %}
-    {% load static %}   
-    
-    <div class="col-md-3"></div>
-        <div class="col-md-6">
-            <div class="row">
-                <div id="monitor_chat" class="monitor_chat col-md-12">
+{% load static %}
+
+<div class="col-md-3"></div>
+<div class="col-md-6">
+    <div class="row">
+        <div id="monitor_chat" class="monitor_chat col-md-12">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 sent_message_chat">
+            <div>count : <span id="count"></span></div>
+            <div>time_last_message : <span id="show_last_time"></span></div>
+            <!-- <div class="row">
+                <div class="col-md-10">
+                    <input for="send_button" class="col-md-12" type="text" name="" id="text_messages">
                 </div>
-            </div>
-            <div class="row"> 
-                <div class="col-md-12 sent_message_chat">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <input class="col-md-12" type="text" name="" id="text_message">
-                        </div>
-                        <div class="col-md-2">
-                            <button id="send_button">
-                                ส่ง
-                            </button>
-                        </div>
+                <div class="col-md-2">
+                    <button id="send_button">
+                        ส่ง
+                    </button>
+                </div>
+            </div> -->
+                <form>
+                    
+            <div class="row">
+                    <div class="col-md-10">
+                    <input class="col-md-12" type="text" name="" id="text_message">
+                    </div>
+                    <div class="col-md-2">  
+                    <input type="submit" id="send_button" value="ส่งข้อความ">
                     </div>
                 </div>
-            </div>
+                </form>
         </div>
-    <div class="col-md-3"></div>
-{% endblock container %} 
+    </div>
+</div>
+<div class="col-md-3"></div>
+{% endblock container %}
 
 {% block script %}
 <script>
-    function get_message(token){
-        data = [
-            {
-                "text": "xxxxxxxxxx",
-                "display_name": "killbic",
-                "date_message": "1/12/2560",
-                "status_conver": 0
-            }, 
-            {
-                "text": "dddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxdddddddddddxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                "display_name": "agentTest",
-                "date_message": "1/12/2560",
-                "status_conver": 1
-            }, 
-            {
-                "text": "ggggggggggg",
-                "display_name": "killbic",
-                "date_message": "1/12/2560",
-                "status_conver": 0
-            }, 
-            {
-                "text": "eeeeeeeeeeee",
-                "display_name": "agentTest",
-                "date_message": "1/12/2560",
-                "status_conver": 1
-            }, 
-            {
-                "text": "hhhhhhhhhhhhhhhhh",
-                "display_name": "killbic",
-                "date_message": "1/12/2560",
-                "status_conver": 0
-            }, 
-            {
-                "text": "kkkkkkkkkkkkk",
-                "display_name": "agentTest",
-                "date_message": "1/12/2560",
-                "status_conver": 1
-            }, 
-        ]
+    var count_message = 0
+    var time_last_message = ""
 
-        conversation_all = ""
-        for (conversation of data){
-            conversation_all += `
-            <div class="box_conversation">                
-                <div class="contact_chat">${conversation["display_name"]}</div>
-                <div class="message_con">${conversation["text"]}</div>
-                <div class="date_con">${conversation["date_message"]}</div>                
-            </div>
-            `
+    function show_test(){
+        $('#show_last_time').html(time_last_message)
+        $('#count').html(count_message)
+    }
+
+    function get_message(mode_usage) {
+        if(mode_usage == "update"){
+            url = `${window.location.origin}${"{% url "chat:get_message" %}"}?token={{ token }}&time_last=${ time_last_message }&mode_get_message=${ mode_usage }`
         }
-        
-        $("#monitor_chat").html(conversation_all)
+        else if(mode_usage == "lazy"){
+            url = `${window.location.origin}${"{% url "chat:get_lazy_message" %}"}?token={{ token }}&start_message=${count_message}`
+        }
+        else{
+            url = `${window.location.origin}${"{% url "chat:get_message" %}"}?token={{ token }}`
+        }        
+        fetch(url).then(res => res.json())
+            .then( result => {
+                if('error' in result){
+                    return
+                }
+
+                data = result["data"]
+                var conversation_all = ""
+                for (conversation of data){
+                    if(conversation["message_type"] === "text"){
+                        var message_content = conversation["message"]
+                    }
+                    else if(conversation["message_type"] === "img"){}
+                    else if(conversation["message_type"] === "file"){}
+
+                    var date_ = conversation["date_message"]
+                    var display_name = conversation["display_name"]
+
+                    if(conversation["status_conver"] == 0){
+                        conversation_all += `
+                        <div class="box_conversation_left">
+                        <div class="contact_chat">${display_name}</div>
+                        <div class="message_con"><p>${message_content}</p></div>
+                        <div class="date_con">${date_}</div>                
+                        </div >
+                        `
+                    }
+                    else{
+                        conversation_all += `
+                        <div style="background-color: #FFE4C4;" class="box_conversation_right">
+                            <div class="contact_chat">${display_name}</div>
+                            <div class="message_con"><p>${message_content}</p></div>
+                            <div class="date_con">${date_}</div>                
+                        </div >
+                        `
+                    }  
+                    count_message += 1
+                    time_last_message = date_
+                }
+                show_test()
+                if(mode_usage == "update"){
+                    if(conversation_all == ""){
+                        return
+                    }
+                    $("#monitor_chat").append(conversation_all)
+                    
+                    var objDiv = document.getElementById("monitor_chat");
+                    objDiv.scrollTop = objDiv.scrollHeight;
+
+                }else if(mode_usage == "lazy"){
+                    $("#monitor_chat").prepend(conversation_all)
+
+                }else{
+                    $("#monitor_chat").html(conversation_all)
+
+                    var objDiv = document.getElementById("monitor_chat");
+                    objDiv.scrollTop = objDiv.scrollHeight;
+
+                }
+                conversation_all = ""
+
+            })      
+
     } 
+    
+    function get_lazy_message(){
+        url = `${window.location.origin}${"{% url "chat:get_lazy_message" %}"}?token={{ token }}&start_message=${count_message}`
+        fetch(url).then(res => res.json()).then( result => {
+        })
+    }
+
+    function use_function_get_update_message(){
+        get_message("update")
+    }
+    function use_function_get_lazy_message(){
+        // get_message("lazy")
+    }
 
     $(document).ready(function() {
         get_message()
+        setInterval(use_function_get_update_message, 1000);
+        
+        $("#monitor_chat").on('mousewheel', function(e){
+            if(e.originalEvent.wheelDelta > 0 && this.scrollTop == 0){
+                use_function_get_lazy_message()
+            }
+            else if($(this).innerHeight() + this.scrollTop >= this.scrollHeight - 2){   
+                console.log($(this).innerHeight() + this.scrollTop, this.scrollHeight - 2)
+            }
+        })
+
     });
+    
+    $(document).on('click', '#send_button', function(e){
+        e.preventDefault()
+
+        let input_text = $('#text_message').val()
+        if(input_text == ''){return}
+        data = {
+            message_type : "text",
+            message : input_text
+        }
+        send_message(data)
+        
+    })
+
+    function send_message(data){
+        $('#text_message').val("")
+        
+        $("#send_button").attr('disabled', 'disabled');
+
+        fetch(`${window.location.origin}${"{% url "chat:send_message" %}"}?token={{ token }}&start_message=${count_message}`, {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then(res => { 
+            return res.json()}).then( result => {
+            if('error' in result){
+                alert(result["error"])
+                return
+            }
+            
+            $("#send_button").removeAttr("disabled");
+                        
+        })
+    }
+
+
 </script>
 {% endblock script %}

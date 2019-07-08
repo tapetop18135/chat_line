@@ -11,8 +11,11 @@ class ChatSession(models.Model):
     end_conversation_at     = models.DateTimeField(blank=True, null=True)
     update_conversation_at  = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return self.token
 
 class ChatMessage(models.Model):
+    session         = models.ForeignKey(ChatSession, null=True, on_delete=models.SET_NULL)
     line_account    = models.ForeignKey(LineAccounts, null=True, on_delete=models.SET_NULL)
     line_contact    = models.ForeignKey(LineContact, null=True, on_delete=models.SET_NULL)
     message_type    = models.CharField(max_length=1000, db_index=True)
@@ -24,5 +27,8 @@ class ChatMessage(models.Model):
     # is_push       = models.BooleanField(default=False, db_index=True)
     raw_data        = models.TextField(blank=True, null=True)
     status_coversation      = models.CharField(max_length=20, blank=True)
+    
+    def __str__(self):
+        return "{} | {} | {}".format(self.line_contact, self.message_type, self.created_on)
     
 
